@@ -23,7 +23,7 @@ public class PlayArea implements Runnable {
     }
     private static PlayArea PLAYAREA = null;
 
-    public static PlayArea getInstance(Referee referee) {
+    public synchronized static PlayArea getInstance(Referee referee) {
         if (PLAYAREA == null) {
             PLAYAREA = new PlayArea(referee);
         }
@@ -156,8 +156,8 @@ public class PlayArea implements Runnable {
      * @param player 
      */
     public void registerPlayer(Player player) {
-        int row = RandomUtils.nextInt(MATRIX_SIZE -1);
-        int column = RandomUtils.nextInt(MATRIX_SIZE -1);
+        int row = RandomUtils.nextInt(MATRIX_SIZE);
+        int column = RandomUtils.nextInt(MATRIX_SIZE);
         
         Cell cell = playAreaCells[row][column];
         if(cell.isOccupied()){
@@ -165,5 +165,9 @@ public class PlayArea implements Runnable {
         }
         
         cell.setPlayer(player);
+    }
+    
+    public void evictPlayer(Player player){
+        player.getCell().setPlayer(null);
     }
 }

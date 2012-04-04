@@ -49,10 +49,26 @@ public class Cell {
         return (row == 0 && column == PlayArea.MATRIX_SIZE - 1) ? true: false;
     }
     public boolean isBottomLeft(){
-        return (PlayArea.MATRIX_SIZE - 1 == 0 && column == 0) ? true: false;
+        return (row == PlayArea.MATRIX_SIZE - 1 && column == 0) ? true: false;
     }
     public boolean isBottomRight(){
-        return (PlayArea.MATRIX_SIZE - 1 == 0 && PlayArea.MATRIX_SIZE - 1 == 0) ? true: false;
+        return ( row == PlayArea.MATRIX_SIZE - 1 && column == PlayArea.MATRIX_SIZE - 1) ? true: false;
+    }
+    
+    public boolean isLeftEdge(){
+        return (column == 0 && row > 0 && row < PlayArea.MATRIX_SIZE -1) ? true: false;
+    }
+    
+    public boolean isTopEdge(){
+        return (row == 0 && column > 0 && column < PlayArea.MATRIX_SIZE -1) ? true: false;
+    }
+    
+    public boolean isRightEdge(){
+        return (column == PlayArea.MATRIX_SIZE -1 && row > 0 && row < PlayArea.MATRIX_SIZE -1) ? true: false;
+    }
+    
+    public boolean isBottomEdge(){
+        return (row == PlayArea.MATRIX_SIZE -1 && column > 0 && column < PlayArea.MATRIX_SIZE -1) ? true: false;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.faziz.playarea;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import org.apache.commons.lang.math.RandomUtils;
 
 /**
  * 
@@ -142,9 +143,53 @@ public class Player {
         }
     }
 
-    /** Determines player's direction, randomly, relative to its current location.*/
+    /** 
+     * Determines player's direction, randomly, 
+     * relative to its current location.
+     */
     private final MovementDirection getMovementDirection() {
-        //TODO: Implement me.
-        return MovementDirection.LEFT;
+        MovementDirection direction = MovementDirection.LEFT;
+        
+        int numberOfDirections = MovementDirection.values().length;
+        int randomDirection;
+        
+        if(cell.isTopLeft()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 0, 1);
+        }else if( cell.isTopRight()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 1, 2);
+        }else if( cell.isBottomLeft()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 0, 3);
+        }else if( cell.isBottomRight()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 2, 3);
+        }else if(cell.isLeftEdge()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 0);
+        }else if(cell.isTopEdge()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 1);
+        }else if(cell.isRightEdge()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 2);
+        }else if(cell.isBottomEdge()){
+            randomDirection = generateRandomeExcluding(numberOfDirections, 3);
+        }else{
+            randomDirection = generateRandomeExcluding(numberOfDirections);
+        }
+        
+        direction = MovementDirection.values()[randomDirection];
+        return direction;
+    }
+    
+    /**
+     * WARNING: NOT VERY EFFECTIVE.
+     * @param max
+     * @param exclude
+     * @return 
+     */
+    private final int generateRandomeExcluding(int max, int... exclude){
+        int n = RandomUtils.nextInt(max);
+        for (int i : exclude) {
+            if( i == n)
+                return generateRandomeExcluding(max, exclude);
+        }
+        
+        return n;
     }
 }
