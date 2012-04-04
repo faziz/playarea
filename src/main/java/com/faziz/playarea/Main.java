@@ -16,5 +16,7 @@ public class Main {
             Player player = new Player(playArea, referee);
             playArea.registerPlayer(player);
         }
+        
+        playArea.activate();
     }
 }

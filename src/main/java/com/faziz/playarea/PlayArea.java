@@ -52,6 +52,7 @@ public class PlayArea implements Runnable {
     }
 
     public void run() {
+        logger.log(Level.INFO, "Handling requests....");
         while (true) {
             try {
                 MoveRequest moveRequest = queue.take();
@@ -177,11 +178,18 @@ public class PlayArea implements Runnable {
             registerPlayer(player);
         }
 
-        logger.log(Level.FINE, "Registering the player with cell: {0}", cell);
+        logger.log(Level.INFO, "Registering the player: {0} with cell: {1}", 
+            new Object[]{player, cell});
         cell.setPlayer(player);
         player.setCell(cell);
+        existingPlayers.add(player);
     }
-
+    
+    public void activate(){
+        Thread t = new Thread(this);
+        t.start();
+    }
+    
     public void reintroducePlayer(Player player) {
         if (player.isPlayerPermanatlyDisallowed() == false) {
             player.ready();

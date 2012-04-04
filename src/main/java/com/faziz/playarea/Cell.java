@@ -132,7 +132,5 @@ public class Cell {
     @Override
     public String toString() {
         return "Row: " + row + ", Column: " + column + ", Player: " + player;
-    }
-    
-    
+    }    
 }
