@@ -1,7 +1,9 @@
 package com.faziz.playarea;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -30,7 +32,7 @@ public class PlayArea implements Runnable {
     public static PlayArea getInstance() {
         return PLAYAREA;
     }
-    private List<Player> existingPlayers = new ArrayList<Player>();
+    private Set<Player> existingPlayers = new HashSet<Player>();
     /** 
      * Blocking queue to hold on to the movement requests. Serve the request in 
      * FIFO manner.
@@ -152,8 +154,8 @@ public class PlayArea implements Runnable {
             Player player = moveRequest.getPlayer();
             player.cleanup();
         }
-        Player winningPlayer = existingPlayers.get(0);
-        logger.log(Level.INFO, "Please: {0} won!", winningPlayer);
+        Player winningPlayer = existingPlayers.iterator().next();
+        logger.log(Level.INFO, "Player: {0} won!", winningPlayer);
         
         //TODOL: Ugly hack.
         System.exit(0);
