@@ -1,4 +1,8 @@
-package com.faziz.playarea;
+package com.faziz.playarea.util;
+
+import com.faziz.playarea.PlayArea;
+import com.faziz.playarea.Player;
+import com.faziz.playarea.Referee;
 
 /**
  *
