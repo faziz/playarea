@@ -71,12 +71,9 @@ public class Referee {
 
     public void flagPlayer(Player player) {
         playArea.evictPlayer(player);
-        player.flag();
     }
 
     public void requestReturnToPlay(Player player) {
-        if (player.isPlayerPermanatlyDisallowed() == false) {
-            player.ready();
-        }
+        playArea.registerPlayer(player);
     }
 }

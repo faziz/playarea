@@ -6,19 +6,15 @@ package com.faziz.playarea;
  * @author faziz
  */
 public class Cell {
-
-    private Cell leftCell = null;
-    private Cell topCell = null;
-    private Cell rightCell = null;
-    private Cell bottomCell = null;
-    
     private Player player = null;
+    private PlayArea playArea = null;
     private int row;
     private int column;
 
-    public Cell(int row, int column) {
+    public Cell(int row, int column, PlayArea playArea) {
         this.row = row;
         this.column = column;
+        this.playArea = playArea;
     }
 
     /**
@@ -75,28 +71,28 @@ public class Cell {
      * @return the leftCell
      */
     public Cell getLeftCell() {
-        return leftCell;
+        return playArea.getCell(row, column -1);
     }
 
     /**
      * @return the topCell
      */
     public Cell getTopCell() {
-        return topCell;
+        return playArea.getCell(row -1, column);
     }
 
     /**
      * @return the rightCell
      */
     public Cell getRightCell() {
-        return rightCell;
+        return playArea.getCell(row, column +1);
     }
 
     /**
      * @return the bottomCell
      */
     public Cell getBottomCell() {
-        return bottomCell;
+        return playArea.getCell(row +1, column);
     }
 
     /**
@@ -104,34 +100,6 @@ public class Cell {
      */
     public void setPlayer(Player player) {
         this.player = player;
-    }
-
-    /**
-     * @param leftCell the leftCell to set
-     */
-    public void setLeftCell(Cell leftCell) {
-        this.leftCell = leftCell;
-    }
-
-    /**
-     * @param topCell the topCell to set
-     */
-    public void setTopCell(Cell topCell) {
-        this.topCell = topCell;
-    }
-
-    /**
-     * @param rightCell the rightCell to set
-     */
-    public void setRightCell(Cell rightCell) {
-        this.rightCell = rightCell;
-    }
-
-    /**
-     * @param bottomCell the bottomCell to set
-     */
-    public void setBottomCell(Cell bottomCell) {
-        this.bottomCell = bottomCell;
     }
     
     public boolean isOccupied(){
@@ -160,4 +128,11 @@ public class Cell {
         
         return cell;
     }
+
+    @Override
+    public String toString() {
+        return "Row: " + row + ", Column: " + column + ", Player: " + player;
+    }
+    
+    
 }

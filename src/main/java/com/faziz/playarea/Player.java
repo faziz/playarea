@@ -30,10 +30,8 @@ public class Player {
      * Constructor to initialize the player.
      * @param playArea
      * @param referee
-     * @param cell 
      */
-    public Player(PlayArea playArea, Referee referee, Cell cell) {
-        this.cell = cell;
+    public Player(PlayArea playArea, Referee referee) {
         this.playArea = playArea;
         this.referee = referee;
     }
@@ -77,23 +75,23 @@ public class Player {
                 new MovementRequestTimer(this, movementDirection),
                 MOVEMENT_REQUEST_DELAY);
     }
-    
-    public void ready(){
+
+    public void ready() {
         getSet();
     }
-    
+
     /**
      * Called by the playarea to notify that the move has been made.
      */
-    public void moveAccepted(){
+    public void moveAccepted() {
         getSet();
     }
-    
+
     /**
      * Called by the playarea to notify that move request has been rejected.
      * @param direction 
      */
-    public void rejectMoveRequest(MovementDirection direction){
+    public void rejectMoveRequest(MovementDirection direction) {
         getSet();
     }
 
@@ -149,47 +147,48 @@ public class Player {
      */
     private final MovementDirection getMovementDirection() {
         MovementDirection direction = MovementDirection.LEFT;
-        
+
         int numberOfDirections = MovementDirection.values().length;
         int randomDirection;
-        
-        if(cell.isTopLeft()){
+
+        if (cell.isTopLeft()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 0, 1);
-        }else if( cell.isTopRight()){
+        } else if (cell.isTopRight()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 1, 2);
-        }else if( cell.isBottomLeft()){
+        } else if (cell.isBottomLeft()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 0, 3);
-        }else if( cell.isBottomRight()){
+        } else if (cell.isBottomRight()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 2, 3);
-        }else if(cell.isLeftEdge()){
+        } else if (cell.isLeftEdge()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 0);
-        }else if(cell.isTopEdge()){
+        } else if (cell.isTopEdge()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 1);
-        }else if(cell.isRightEdge()){
+        } else if (cell.isRightEdge()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 2);
-        }else if(cell.isBottomEdge()){
+        } else if (cell.isBottomEdge()) {
             randomDirection = generateRandomeExcluding(numberOfDirections, 3);
-        }else{
+        } else {
             randomDirection = generateRandomeExcluding(numberOfDirections);
         }
-        
+
         direction = MovementDirection.values()[randomDirection];
         return direction;
     }
-    
+
     /**
      * WARNING: NOT VERY EFFECTIVE.
      * @param max
      * @param exclude
      * @return 
      */
-    private final int generateRandomeExcluding(int max, int... exclude){
+    private final int generateRandomeExcluding(int max, int... exclude) {
         int n = RandomUtils.nextInt(max);
         for (int i : exclude) {
-            if( i == n)
+            if (i == n) {
                 return generateRandomeExcluding(max, exclude);
+            }
         }
-        
+
         return n;
     }
 }

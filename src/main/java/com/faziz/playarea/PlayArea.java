@@ -1,5 +1,7 @@
 package com.faziz.playarea;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -12,26 +14,23 @@ import org.apache.commons.lang.math.RandomUtils;
  */
 public class PlayArea implements Runnable {
 
+    /** Logger for this class. */
+    private static final Logger logger = Logger.getLogger(PlayArea.class.getName());
     private Referee referee = null;
+    /** Matrix size of the play area. */
     public static final int MATRIX_SIZE = 100;
     /** Play area matrix. */
     private Cell[][] playAreaCells = new Cell[MATRIX_SIZE][MATRIX_SIZE];
 
-    private PlayArea(Referee referee) {
-        this.referee = referee;
+    private PlayArea() {
         initializePlayAreaCells();
     }
-    private static PlayArea PLAYAREA = null;
+    private static PlayArea PLAYAREA = new PlayArea();
 
-    public synchronized static PlayArea getInstance(Referee referee) {
-        if (PLAYAREA == null) {
-            PLAYAREA = new PlayArea(referee);
-        }
-
+    public static PlayArea getInstance() {
         return PLAYAREA;
     }
-    /** Logger for this class. */
-    private static final Logger logger = Logger.getLogger(PlayArea.class.getName());
+    private List<Player> existingPlayers = new ArrayList<Player>();
     /** 
      * Blocking queue to hold on to the movement requests. Serve the request in 
      * FIFO manner.
@@ -64,8 +63,18 @@ public class PlayArea implements Runnable {
                         player.flag();
                     }
                     movePlayer(player, direction);
+                    if (existingPlayers.contains(player) == false) {
+                        existingPlayers.add(player);
+                    }
                 } else {
                     player.rejectMoveRequest(direction);
+                    existingPlayers.remove(player);
+                }
+
+                if (existingPlayers.size() == 1) {
+                    Player winningPlayer = existingPlayers.get(0);
+                    logger.log(Level.INFO, "Please: {0} won!", winningPlayer);
+                    break;
                 }
             } catch (InterruptedException ex) {
                 logger.log(Level.SEVERE, "Could not process requests.", ex);
@@ -92,34 +101,38 @@ public class PlayArea implements Runnable {
     private final void movePlayer(Player player, MovementDirection direction) {
         Cell cell = lookupRequestedCell(player, direction);
         cell.setPlayer(player);
-        
+
         player.getCell().setPlayer(null);
         player.setCell(cell);
         player.moveAccepted();
     }
 
+    /**
+     * Initializing the matrix with cells.
+     */
     private final void initializePlayAreaCells() {
+        logger.log(Level.INFO, "Initializing the grid");
         for (int row = 0; row < MATRIX_SIZE; row++) {
             for (int column = 0; column < MATRIX_SIZE; column++) {
-                Cell cell = new Cell(row, column);
+                Cell cell = new Cell(row, column, this);
                 playAreaCells[row][column] = cell;
-                
-                cell.setLeftCell( getCell(row, column -1));
-                cell.setTopCell( getCell(row -1, column));
-                cell.setRightCell( getCell(row, column +1));
-                cell.setBottomCell( getCell(row +1, column));
             }
         }
     }
-    
-    private final Cell getCell(int row, int column){
-        try{
+
+    public final Cell getCell(int row, int column) {
+        try {
             return playAreaCells[row][column];
-        }catch(ArrayIndexOutOfBoundsException ex){
-            logger.log(Level.FINER, "No cell found at location row: {0}, column: {1}", 
-                new Object[]{row, column});
+        } catch (ArrayIndexOutOfBoundsException ex) {
             return null;
         }
+    }
+
+    /**
+     * @param referee the referee to set
+     */
+    public void setReferee(Referee referee) {
+        this.referee = referee;
     }
 
     /**
@@ -158,16 +171,25 @@ public class PlayArea implements Runnable {
     public void registerPlayer(Player player) {
         int row = RandomUtils.nextInt(MATRIX_SIZE);
         int column = RandomUtils.nextInt(MATRIX_SIZE);
-        
+
         Cell cell = playAreaCells[row][column];
-        if(cell.isOccupied()){
+        if (cell.isOccupied()) {
             registerPlayer(player);
         }
-        
+
+        logger.log(Level.FINE, "Registering the player with cell: {0}", cell);
         cell.setPlayer(player);
+        player.setCell(cell);
     }
-    
-    public void evictPlayer(Player player){
+
+    public void reintroducePlayer(Player player) {
+        if (player.isPlayerPermanatlyDisallowed() == false) {
+            player.ready();
+        }
+    }
+
+    public void evictPlayer(Player player) {
         player.getCell().setPlayer(null);
+        player.flag();
     }
 }
