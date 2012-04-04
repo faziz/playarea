@@ -84,6 +84,9 @@ public class Player {
                 MOVEMENT_REQUEST_DELAY);
     }
 
+    /**
+     * Initializes the player to make the request.
+     */
     public void ready() {
         logger.log(Level.INFO, "Initializing player.");
         getSet();

@@ -210,6 +210,9 @@ public class PlayArea implements Runnable {
         existingPlayers.add(player);
     }
     
+    /**
+     * Initializes internal infrastructure to accept the player's request.
+     */
     public void activate(){
         logger.log(Level.INFO, "Activating playing area.");
         Thread t = new Thread(this);
@@ -217,11 +220,19 @@ public class PlayArea implements Runnable {
         logger.log(Level.INFO, "Paying area activated.");
     }
 
+    /**
+     * Removes the player from the playing area.
+     * @param player 
+     */
     public void evictPlayer(Player player) {
+        existingPlayers.remove(player);
         player.getCell().setPlayer(null);
         player.flag();
     }
     
+    /**
+     * Initializes the player to make the movement request.
+     */
     public void initializePlayers(){
         logger.log(Level.INFO, "Initializing players.");
         for (Player player : existingPlayers) {
