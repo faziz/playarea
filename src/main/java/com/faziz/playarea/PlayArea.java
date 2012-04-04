@@ -55,23 +55,32 @@ public class PlayArea implements Runnable {
         logger.log(Level.INFO, "Handling requests....");
         while (true) {
             try {
-                MoveRequest moveRequest = queue.take();
+                MoveRequest moveRequest = queue.take();                
                 Player player = moveRequest.getPlayer();
                 MovementDirection direction = moveRequest.getDirection();
-
+                logger.log(Level.INFO, "Move request for player:{0} in direction:{1}", 
+                    new Object[]{player, direction});
+                
                 if (referee.moveIsAllowed(player, direction)) {
+                    logger.info("move is allowed.");
                     if (referee.moveIsFouled(player, direction)) {
+                        logger.info("move is fouled.");
                         player.flag();
+                        
+                        if(player.isPlayerToBeRemoved()){
+                            existingPlayers.remove(player);
+                        }
                     }
                     movePlayer(player, direction);
                     if (existingPlayers.contains(player) == false) {
                         existingPlayers.add(player);
                     }
                 } else {
-                    player.rejectMoveRequest(direction);
-                    existingPlayers.remove(player);
+                    player.rejectMoveRequest(direction);                    
                 }
 
+                logger.log(Level.INFO, "Players in the system: {0}.", 
+                        existingPlayers.size());
                 if (existingPlayers.size() == 1) {
                     queue.clear();
                     Player winningPlayer = existingPlayers.get(0);
@@ -191,12 +200,6 @@ public class PlayArea implements Runnable {
         Thread t = new Thread(this);
         t.start();
         logger.log(Level.INFO, "Paying area activated.");
-    }
-    
-    public void reintroducePlayer(Player player) {
-        if (player.isPlayerPermanatlyDisallowed() == false) {
-            player.ready();
-        }
     }
 
     public void evictPlayer(Player player) {

@@ -1,10 +1,15 @@
 package com.faziz.playarea;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author faziz
  */
 public class Referee {
+    
+    private static final Logger logger = Logger.getLogger(Referee.class.getName());
 
     private PlayArea playArea = null;
     /** Singleton instance of the referee.*/
@@ -26,27 +31,41 @@ public class Referee {
      * any direction.
      */
     public boolean moveIsFouled(Player player, MovementDirection direction) {
+        logger.log(Level.INFO, "Testing if move is fouled for player: "
+                + "{0} to direction: {1}.", new Object[]{player, direction});
         boolean isFouled = false;
+        
         Cell cellInDirection = player.getCell().getCellInDirection(direction);
-        if (cellInDirection == null) {
-            isFouled = true;
-        } else if (areAdjacentCellsOccupied(cellInDirection)) {
+        logger.log(Level.INFO, "Player cell: {0}", player.getCell());
+        logger.log(Level.INFO, "Player cellInDirection: {0}", cellInDirection);
+        
+        if (areAdjacentCellsOccupied(cellInDirection)) {
             isFouled = true;
         }
 
+        logger.log(Level.INFO, "isFouled: {0}", isFouled);
         return isFouled;
     }
 
     public boolean areAdjacentCellsOccupied(Cell cell) {
-        return isAdjacentCellsOccupied(cell.getLeftCell())
-                && isAdjacentCellsOccupied(cell.getTopCell())
-                && isAdjacentCellsOccupied(cell.getRightCell())
-                && isAdjacentCellsOccupied(cell.getBottomCell());
+        return (isAdjacentCellsOccupied(cell.getLeftCell())
+                || isAdjacentCellsOccupied(cell.getTopCell())
+                || isAdjacentCellsOccupied(cell.getRightCell())
+                || isAdjacentCellsOccupied(cell.getBottomCell()))? true: false;
 
     }
 
     public boolean isAdjacentCellsOccupied(Cell cell) {
-        return (cell == null || null != cell.getPlayer()) ? true : false;
+        logger.log(Level.INFO, "isAdjacentCellsOccupied: {0}", cell);
+        boolean isAdjacent = false;
+        if( cell != null){
+            if( null == cell.getPlayer()){
+                isAdjacent = true;
+            }else{
+                isAdjacent = false;
+            }
+        }
+        return isAdjacent;
     }
 
     /**
@@ -56,16 +75,22 @@ public class Referee {
      * @return 
      */
     public boolean moveIsAllowed(Player player, MovementDirection direction) {
+        logger.info("Testing if the move is allowed.");
+        
         boolean isAllowed = false;
         Cell playerCell = player.getCell();
+        logger.log(Level.INFO, "Player cell: {0}", playerCell);
 
         Cell cellInDirection = playerCell.getCellInDirection(direction);
+        logger.log(Level.INFO, "Player cellInDirection: {0}", cellInDirection);
+        
         if (cellInDirection == null) {
             isAllowed = false;
         } else if (cellInDirection.isEmpty()) {
             isAllowed = true;
         }
 
+        logger.log(Level.INFO, "cell is allowed: {0}", isAllowed);
         return isAllowed;
     }
 
@@ -75,5 +100,6 @@ public class Referee {
 
     public void requestReturnToPlay(Player player) {
         playArea.registerPlayer(player);
+        player.ready();
     }
 }

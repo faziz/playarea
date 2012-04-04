@@ -29,25 +29,28 @@ public class Player {
     /** Referee instance used to allow the user to return. */
     private Referee referee = null;
 
+    private String name = null;
     /**
      * Constructor to initialize the player.
      * @param playArea
      * @param referee
      */
-    public Player(PlayArea playArea, Referee referee) {
+    public Player(PlayArea playArea, Referee referee, String name) {
         this.playArea = playArea;
         this.referee = referee;
+        this.name = name;
     }
     /** Timer used to move the player in the player area.*/
-    private Timer movementTimer = null;
+    private Timer movementTimer = new Timer();
     /** Timer used to request the referee to allow player's return.*/
-    private Timer requestReturnTimer = null;
+    private Timer requestReturnTimer = new Timer();
 
     /** Called by the referee. Increases the number fouls committed by the player.*/
     public void flag() {
         flagCount++;
 
-        if (flagCount == 2) {
+        logger.log(Level.INFO, "Flagging player-> flag count {0}", flagCount);
+        if (flagCount < 3) {
             requestRefereeForReintroduction();
         }
     }
@@ -56,14 +59,12 @@ public class Player {
      * 
      */
     private final void requestRefereeForReintroduction() {
-        requestReturnTimer = new Timer();
         requestReturnTimer.schedule(new RequestReintoductionTimer(this, referee),
                 REINTRODUCTION_REQUEST_DELAY);
     }
 
-    /** Checks whether player can be permanently removed from the play.*/
-    public boolean isPlayerPermanatlyDisallowed() {
-        if (flagCount == 2) {
+    public boolean isPlayerToBeRemoved() {
+        if (flagCount > 1) {
             return true;
         } else {
             return false;
@@ -72,8 +73,7 @@ public class Player {
 
     /** Initializes the movement requests. Called by the playarea and referee. */
     private void getSet() {
-        MovementDirection movementDirection = getMovementDirection();
-        movementTimer = new Timer();
+        MovementDirection movementDirection = getMovementDirection();        
         movementTimer.schedule(
                 new MovementRequestTimer(this, movementDirection),
                 MOVEMENT_REQUEST_DELAY);
@@ -97,7 +97,8 @@ public class Player {
      * @param direction 
      */
     public void rejectMoveRequest(MovementDirection direction) {
-        logger.log(Level.INFO, "Player:{0} move in direction: {1} rejected.", new Object[]{this, direction});
+        logger.log(Level.INFO, "Player:{0} move in direction: {1} rejected.", 
+            new Object[]{this, direction});
         getSet();
     }
 
@@ -117,8 +118,8 @@ public class Player {
 
     class MovementRequestTimer extends TimerTask {
 
-        MovementDirection direction = null;
-        Player player = null;
+        private MovementDirection direction = null;
+        private Player player = null;
 
         public MovementRequestTimer(Player player, MovementDirection direction) {
             this.player = player;
@@ -128,6 +129,20 @@ public class Player {
         @Override
         public void run() {
             playArea.requestMove(player, direction);
+        }
+
+        /**
+         * @param direction the direction to set
+         */
+        public void setDirection(MovementDirection direction) {
+            this.direction = direction;
+        }
+
+        /**
+         * @param player the player to set
+         */
+        public void setPlayer(Player player) {
+            this.player = player;
         }
     }
 
@@ -152,8 +167,6 @@ public class Player {
      * relative to its current location.
      */
     private final MovementDirection getMovementDirection() {
-        MovementDirection direction = MovementDirection.LEFT;
-
         int numberOfDirections = MovementDirection.values().length;
         int randomDirection;
 
@@ -176,9 +189,8 @@ public class Player {
         } else {
             randomDirection = generateRandomeExcluding(numberOfDirections);
         }
-
-        direction = MovementDirection.values()[randomDirection];
-        return direction;
+        
+        return MovementDirection.values()[randomDirection];
     }
 
     /**
@@ -196,5 +208,10 @@ public class Player {
         }
 
         return n;
+    }
+
+    @Override
+    public String toString() {
+        return "Player{ name=" + name + '}';
     }
 }
