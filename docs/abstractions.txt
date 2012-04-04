@@ -1,0 +1,8 @@
+Following abstractions are used in the code.
+
+1. Playarea: Acts as a coordinator, coordinating players movements.
+2. Referee: Decides foul play, and also whether to allow a player to return.
+3. Player: Moves around the play area.
+4. Cell: A particular point in 100*100 matrix. Is assigned to player occupying it.
+
+

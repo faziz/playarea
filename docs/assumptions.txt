@@ -1,0 +1,21 @@
+1. 100m*100m translates to 100*100 matrix. In Java that would mean, an array of multi dimensional array of 100*100.
+2. Each location in the matrix can only be occupied by one player at a time.
+3. A player's movement can be rejected if there is an occupant in the cell. 
+   On rejection, the player will have to wait for another second before he can make a move again.
+5. Player's movement will be random.
+4. There can be, at most, 4 distinct movements allowed to a player, relative to its position,
+    *   LEFT,
+    *   TOP,
+    *   RIGHT,
+    *   BOTTOM.
+5. If the player is in the corner,
+    * LEFT-TOP, he can only move to RIGHT or BOTTOM,
+    * RIGHT-TOP, he can only move to LEFT or BOTTOM,
+    * LEFT-BOTTOM, he can only move to LEFT or TOP,
+    * RIGHT-BOTTOM, he can only move to LEFT or BOTTOM.
+6. If the player is on the edge of the playarea, but not in the corner,
+    * LEFT, he can only move to TOP, RIGHT or BOTTOM,
+    * TOP, he can only move to LEFT, RIGHT or BOTTOM,
+    * RIGHT, he can only move to LEFT, TOP or BOTTOM,
+    * BOTTOM, he can only move to LEFT, TOP, RIGHT.
+
