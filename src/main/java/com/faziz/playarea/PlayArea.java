@@ -73,6 +73,7 @@ public class PlayArea implements Runnable {
                 }
 
                 if (existingPlayers.size() == 1) {
+                    queue.clear();
                     Player winningPlayer = existingPlayers.get(0);
                     logger.log(Level.INFO, "Please: {0} won!", winningPlayer);
                     break;
@@ -186,8 +187,10 @@ public class PlayArea implements Runnable {
     }
     
     public void activate(){
+        logger.log(Level.INFO, "Activating playing area.");
         Thread t = new Thread(this);
         t.start();
+        logger.log(Level.INFO, "Paying area activated.");
     }
     
     public void reintroducePlayer(Player player) {
@@ -199,5 +202,12 @@ public class PlayArea implements Runnable {
     public void evictPlayer(Player player) {
         player.getCell().setPlayer(null);
         player.flag();
+    }
+    
+    public void initializePlayers(){
+        logger.log(Level.INFO, "Initializing players.");
+        for (Player player : existingPlayers) {
+            player.ready();
+        }
     }
 }

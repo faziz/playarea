@@ -1,11 +1,13 @@
 package com.faziz.playarea;
 
+
 /**
  *
  * @author faziz
  */
 public class Main {
-    private static final int NUMBER_OF_PLAYERS = 10;
+    
+    private static final int NUMBER_OF_PLAYERS = 2;
     
     public static void main(String[] args) {
         PlayArea playArea = PlayArea.getInstance();
@@ -18,5 +20,6 @@ public class Main {
         }
         
         playArea.activate();
+        playArea.initializePlayers();
     }
 }

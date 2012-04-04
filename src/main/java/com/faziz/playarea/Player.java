@@ -2,6 +2,8 @@ package com.faziz.playarea;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.math.RandomUtils;
 
 /**
@@ -10,6 +12,7 @@ import org.apache.commons.lang.math.RandomUtils;
  */
 public class Player {
 
+    private static final Logger logger = Logger.getLogger(Player.class.getName());
     /** Delay between each request in player's movement.*/
     private static final long MOVEMENT_REQUEST_DELAY = 1000l;
     /** Delay in the call to the referee for reintroduction.*/
@@ -77,6 +80,7 @@ public class Player {
     }
 
     public void ready() {
+        logger.log(Level.INFO, "Initializing player.");
         getSet();
     }
 
@@ -84,6 +88,7 @@ public class Player {
      * Called by the playarea to notify that the move has been made.
      */
     public void moveAccepted() {
+        logger.log(Level.INFO, "Player:{0} move accepted.", new Object[]{this});
         getSet();
     }
 
@@ -92,6 +97,7 @@ public class Player {
      * @param direction 
      */
     public void rejectMoveRequest(MovementDirection direction) {
+        logger.log(Level.INFO, "Player:{0} move in direction: {1} rejected.", new Object[]{this, direction});
         getSet();
     }
 
@@ -176,7 +182,7 @@ public class Player {
     }
 
     /**
-     * WARNING: NOT VERY EFFECTIVE.
+     * WARNING: NOT VERY PRETTY BUT EFFECTIVE FOR NOW.
      * @param max
      * @param exclude
      * @return 
