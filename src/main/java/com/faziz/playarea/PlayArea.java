@@ -63,6 +63,7 @@ public class PlayArea implements Runnable {
                 
                 if (referee.moveIsAllowed(player, direction)) {
                     logger.info("move is allowed.");
+                    boolean moveIsFouled = referee.moveIsFouled(player, direction);
                     if (referee.moveIsFouled(player, direction)) {
                         logger.info("move is fouled.");
                         player.flag();
@@ -72,7 +73,7 @@ public class PlayArea implements Runnable {
                         }
                     }
                     movePlayer(player, direction);
-                    if (existingPlayers.contains(player) == false) {
+                    if (existingPlayers.contains(player) == false && moveIsFouled == false) {
                         existingPlayers.add(player);
                     }
                 } else {
@@ -82,9 +83,7 @@ public class PlayArea implements Runnable {
                 logger.log(Level.INFO, "Players in the system: {0}.", 
                         existingPlayers.size());
                 if (existingPlayers.size() == 1) {
-                    queue.clear();
-                    Player winningPlayer = existingPlayers.get(0);
-                    logger.log(Level.INFO, "Please: {0} won!", winningPlayer);
+                    cleanupAndShutdown();                    
                     break;
                 }
             } catch (InterruptedException ex) {
@@ -144,6 +143,20 @@ public class PlayArea implements Runnable {
      */
     public void setReferee(Referee referee) {
         this.referee = referee;
+    }
+
+    private void cleanupAndShutdown() {
+        ArrayList<MoveRequest> processess = new ArrayList<MoveRequest>();
+        queue.drainTo(processess);
+        for (MoveRequest moveRequest : processess) {
+            Player player = moveRequest.getPlayer();
+            player.cleanup();
+        }
+        Player winningPlayer = existingPlayers.get(0);
+        logger.log(Level.INFO, "Please: {0} won!", winningPlayer);
+        
+        //TODOL: Ugly hack.
+        System.exit(0);
     }
 
     /**

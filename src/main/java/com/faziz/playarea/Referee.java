@@ -48,11 +48,17 @@ public class Referee {
     }
 
     public boolean areAdjacentCellsOccupied(Cell cell) {
-        return (isAdjacentCellsOccupied(cell.getLeftCell())
-                || isAdjacentCellsOccupied(cell.getTopCell())
-                || isAdjacentCellsOccupied(cell.getRightCell())
-                || isAdjacentCellsOccupied(cell.getBottomCell()))? true: false;
-
+        if(isAdjacentCellsOccupied(cell.getLeftCell())){
+            return true;
+        }else if(isAdjacentCellsOccupied(cell.getTopCell())){
+            return true;
+        }else if(isAdjacentCellsOccupied(cell.getRightCell())){
+            return true;
+        }else if(isAdjacentCellsOccupied(cell.getBottomCell())){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public boolean isAdjacentCellsOccupied(Cell cell) {

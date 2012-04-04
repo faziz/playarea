@@ -54,6 +54,11 @@ public class Player {
             requestRefereeForReintroduction();
         }
     }
+    
+    public void cleanup(){
+        requestReturnTimer.cancel();
+        movementTimer.cancel();
+    }
 
     /**
      * 

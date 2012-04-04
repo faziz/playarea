@@ -6,7 +6,7 @@ package com.faziz.playarea;
  */
 public class Main {
 
-    private static final int NUMBER_OF_PLAYERS = 20;
+    private static final int NUMBER_OF_PLAYERS = 10;
 
     public static void main(String[] args) {
         PlayArea playArea = PlayArea.getInstance();
