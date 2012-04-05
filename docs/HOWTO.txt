@@ -1,0 +1,6 @@
+This project is based on standard Apache Maven build script. 
+The class com.faziz.playarea.util.Main is one used as the starting point of the project.
+
+To invoke this project you need to,
+1. Make sure you have Apache Maven installed on the machine.
+2. Run this script from the command prompt mvn exec:java -Dexec.mainClass="com.faziz.playarea.util.Main"
