@@ -47,7 +47,12 @@ public class Referee {
         return isFouled;
     }
 
-    public boolean areAdjacentCellsOccupied(Cell cell) {
+    /**
+     * Checks if the adjacent cells of the this cell are occupied by player.
+     * @param cell
+     * @return 
+     */
+    private final boolean areAdjacentCellsOccupied(Cell cell) {
         if(isAdjacentCellsOccupied(cell.getLeftCell())){
             return true;
         }else if(isAdjacentCellsOccupied(cell.getTopCell())){
@@ -61,7 +66,12 @@ public class Referee {
         }
     }
 
-    public boolean isAdjacentCellsOccupied(Cell cell) {
+    /**
+     * Checks if the cell is occupied by the player.
+     * @param cell
+     * @return 
+     */
+    private final boolean isAdjacentCellsOccupied(Cell cell) {
         logger.log(Level.INFO, "isAdjacentCellsOccupied: {0}", cell);
         boolean isAdjacent = false;
         if( cell != null){
@@ -100,10 +110,18 @@ public class Referee {
         return isAllowed;
     }
 
+    /**
+     * Flag player that he has made a foul move.
+     * @param player 
+     */
     public void flagPlayer(Player player) {
         playArea.evictPlayer(player);
     }
 
+    /**
+     * Requests the playarea to return the player to the play.
+     * @param player 
+     */
     public void requestReturnToPlay(Player player) {
         playArea.registerPlayer(player);
         player.ready();

@@ -4,10 +4,6 @@ import com.faziz.playarea.PlayArea;
 import com.faziz.playarea.Player;
 import com.faziz.playarea.Referee;
 
-/**
- *
- * @author faziz
- */
 public class Main {
 
     private static final int NUMBER_OF_PLAYERS = 10;
@@ -23,6 +19,6 @@ public class Main {
         }
 
         playArea.activate();
-        playArea.initializePlayers();
+        playArea.go();
     }
 }

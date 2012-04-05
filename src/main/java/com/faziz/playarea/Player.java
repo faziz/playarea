@@ -7,6 +7,12 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.math.RandomUtils;
 
 /**
+ * A player makes the movement requests to the play area. Play area determines
+ * if the move is foul one. If the player makes 2 fouls he is taken out of the 
+ * play. 
+ * 
+ * Player can be returned to the play if evicted from the play for the first time.
+ * Subsequent eviction becomes permanent.
  * 
  * @author faziz
  */
@@ -21,14 +27,20 @@ public class Player {
      * Foul flag count for the player. If the count is reaches 2, player will be
      * permanently removed from the play.
      */
-    protected int flagCount = 0;
+    private int flagCount = 0;
+    
+    /**
+     * Count of players eviction, 2 eviction and the player can not return to the game.
+     */
+    private int evictionCount = 0;
+    
     /** Current cell of the player. */
     private Cell cell = null;
     /** Playarea used to me movement request.*/
     private PlayArea playArea = null;
     /** Referee instance used to allow the user to return. */
     private Referee referee = null;
-
+    /** Player name, used to identify each player in the play. */
     private String name = null;
     /**
      * Constructor to initialize the player.
@@ -45,15 +57,20 @@ public class Player {
     /** Timer used to request the referee to allow player's return.*/
     private Timer requestReturnTimer = new Timer();
 
-    /** Called by the referee. Increases the number fouls committed by the player.*/
+    /** 
+     * Called by the referee. Increases the number fouls committed by the player.
+     */
     public void flag() {
         flagCount++;
+        if( flagCount > 1 )
+            evictionCount++;
 
         logger.log(Level.INFO, "Flagging player-> flag count {0}", flagCount);
-        if (flagCount < 3) {
+        logger.log(Level.INFO, "Flagging player-> eviction count {0}", evictionCount);
+        if (evictionCount < 2) {
             requestRefereeForReintroduction();
         }
-    }
+    }    
     
     public void cleanup(){
         requestReturnTimer.cancel();
@@ -69,7 +86,7 @@ public class Player {
     }
 
     public boolean isPlayerToBeRemoved() {
-        if (flagCount > 1) {
+        if (flagCount == 2 || evictionCount > 1) {
             return true;
         } else {
             return false;
@@ -88,7 +105,7 @@ public class Player {
      * Initializes the player to make the request.
      */
     public void ready() {
-        logger.log(Level.INFO, "Initializing player.");
+        logger.log(Level.INFO, "Initializing player: {0}.", this);
         getSet();
     }
 
@@ -97,7 +114,7 @@ public class Player {
      */
     public void moveAccepted() {
         logger.log(Level.INFO, "Player:{0} move accepted.", new Object[]{this});
-        getSet();
+        ready();
     }
 
     /**
@@ -107,7 +124,7 @@ public class Player {
     public void rejectMoveRequest(MovementDirection direction) {
         logger.log(Level.INFO, "Player:{0} move in direction: {1} rejected.", 
             new Object[]{this, direction});
-        getSet();
+        ready();
     }
 
     /**
@@ -167,6 +184,7 @@ public class Player {
         @Override
         public void run() {
             referee.requestReturnToPlay(player);
+            flagCount = 0;
         }
     }
 

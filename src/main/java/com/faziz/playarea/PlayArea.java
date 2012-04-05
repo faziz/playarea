@@ -2,7 +2,6 @@ package com.faziz.playarea;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -11,7 +10,11 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.math.RandomUtils;
 
 /**
- *
+ * This class acts a coordinator. It coordinates the players movements, as well as
+ * foul play.
+ * 
+ * It uses <code>ArrayBlockingQueue</code> to process players movement requests.
+ * 
  * @author faziz
  */
 public class PlayArea implements Runnable {
@@ -32,7 +35,13 @@ public class PlayArea implements Runnable {
     public static PlayArea getInstance() {
         return PLAYAREA;
     }
-    private Set<Player> existingPlayers = new HashSet<Player>();
+    
+    /** 
+     * Currently registered players. Only registered players will be able to make
+     * movement requests.
+     */
+    private Set<Player> registeredPlayers = new HashSet<Player>();
+    
     /** 
      * Blocking queue to hold on to the movement requests. Serve the request in 
      * FIFO manner.
@@ -46,14 +55,14 @@ public class PlayArea implements Runnable {
      */
     public void requestMove(Player player, MovementDirection direction) {
         try {
-            if(existingPlayers.contains(player))
+            if(registeredPlayers.contains(player))
                 queue.put(new MoveRequest(player, direction));
         } catch (InterruptedException ex) {
             logger.log(Level.SEVERE, "Could not put new request, queue exhausted.", ex);
             throw new IllegalStateException("Could not put new request, queue exhausted.", ex);
         }
     }
-
+    
     public void run() {
         logger.log(Level.INFO, "Handling requests....");
         while (true) {
@@ -67,25 +76,26 @@ public class PlayArea implements Runnable {
                 if (referee.moveIsAllowed(player, direction)) {
                     logger.info("move is allowed.");
                     boolean moveIsFouled = referee.moveIsFouled(player, direction);
-                    if (referee.moveIsFouled(player, direction)) {
+                    if (moveIsFouled) {
                         logger.info("move is fouled.");
                         player.flag();
                         
                         if(player.isPlayerToBeRemoved()){
-                            existingPlayers.remove(player);
+                            referee.flagPlayer(player);
                         }
                     }
+                    
                     movePlayer(player, direction);
-                    if (existingPlayers.contains(player) == false && moveIsFouled == false) {
-                        existingPlayers.add(player);
+                    if (registeredPlayers.contains(player) == false && moveIsFouled == false) {
+                        registeredPlayers.add(player);
                     }
                 } else {
                     player.rejectMoveRequest(direction);                    
                 }
 
                 logger.log(Level.INFO, "Players in the system: {0}.", 
-                        existingPlayers.size());
-                if (existingPlayers.size() == 1) {
+                        registeredPlayers.size());
+                if (registeredPlayers.size() == 1) {
                     cleanupAndShutdown();                    
                     break;
                 }
@@ -94,17 +104,7 @@ public class PlayArea implements Runnable {
                 throw new IllegalStateException("Could not process requests.", ex);
             }
         }
-    }
-
-    /**
-     * Looks up the new cell for the player as per his request.
-     * @param player
-     * @param direction
-     * @return 
-     */
-    private final Cell lookupRequestedCell(Player player, MovementDirection direction) {
-        return player.getCell().getCellInDirection(direction);
-    }
+    }    
 
     /**
      * Moves the player to the new cell.
@@ -112,11 +112,11 @@ public class PlayArea implements Runnable {
      * @param direction 
      */
     private final void movePlayer(Player player, MovementDirection direction) {
-        Cell cell = lookupRequestedCell(player, direction);
-        cell.setPlayer(player);
+        Cell newCell = player.getCell().getCellInDirection(direction);
+        newCell.setPlayer(player);
 
         player.getCell().setPlayer(null);
-        player.setCell(cell);
+        player.setCell(newCell);
         player.moveAccepted();
     }
 
@@ -133,6 +133,14 @@ public class PlayArea implements Runnable {
         }
     }
 
+    /**
+     * Returns cell matching the coordinates. If coordinates are not found, it 
+     * returns null.
+     * 
+     * @param row
+     * @param column
+     * @return cell if found in the play area matrix or null.
+     */
     public final Cell getCell(int row, int column) {
         try {
             return playAreaCells[row][column];
@@ -155,8 +163,8 @@ public class PlayArea implements Runnable {
             Player player = moveRequest.getPlayer();
             player.cleanup();
         }
-        Player winningPlayer = existingPlayers.iterator().next();
-        logger.log(Level.INFO, "Player: {0} won!", winningPlayer);
+        Player winningPlayer = registeredPlayers.iterator().next();
+        logger.log(Level.INFO, "{0} won!", winningPlayer);
         
         //TODOL: Ugly hack.
         System.exit(0);
@@ -208,7 +216,7 @@ public class PlayArea implements Runnable {
             new Object[]{player, cell});
         cell.setPlayer(player);
         player.setCell(cell);
-        existingPlayers.add(player);
+        registeredPlayers.add(player);
     }
     
     /**
@@ -226,17 +234,16 @@ public class PlayArea implements Runnable {
      * @param player 
      */
     public void evictPlayer(Player player) {
-        existingPlayers.remove(player);
+        registeredPlayers.remove(player);
         player.getCell().setPlayer(null);
-        player.flag();
     }
     
     /**
-     * Initializes the player to make the movement request.
+     * Make the registered players to start making movement requests.
      */
-    public void initializePlayers(){
+    public void go(){
         logger.log(Level.INFO, "Initializing players.");
-        for (Player player : existingPlayers) {
+        for (Player player : registeredPlayers) {
             player.ready();
         }
     }
