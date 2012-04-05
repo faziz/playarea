@@ -46,7 +46,8 @@ public class PlayArea implements Runnable {
      */
     public void requestMove(Player player, MovementDirection direction) {
         try {
-            queue.put(new MoveRequest(player, direction));
+            if(existingPlayers.contains(player))
+                queue.put(new MoveRequest(player, direction));
         } catch (InterruptedException ex) {
             logger.log(Level.SEVERE, "Could not put new request, queue exhausted.", ex);
             throw new IllegalStateException("Could not put new request, queue exhausted.", ex);
