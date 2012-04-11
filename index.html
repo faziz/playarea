@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Playarea : Playing area assignment" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Playarea</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/faziz/playarea">Fork Me on GitHub</a>
+
+          <h1 id="project_title">Playarea</h1>
+          <h2 id="project_tagline">Playing area assignment</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/faziz/playarea/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/faziz/playarea/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Game Exercise</h3>
+
+<h1></h1>
+
+<p>A playing area is 100m x 100m. A game has a referee and 10 players. 
+A player moves 1m every second and starts out in a random place on the playing area. 
+A referee has to give a yellow card to a player if that player moves within 2m of another player. 
+It is the player that moves to within 2m gets the card. 
+If a player gets 2 yellow cards, the player is ejected from the game for 10 seconds. 
+When a player is off 10 secs the player needs to ask the referee if they are eligible to play again. 
+The referee will let the player return to playing the first time this happens, but not subsequent times. 
+The last player left playing is the winner.</p>
+
+<p>Write a console application that emulates this activity.  </p>
+
+<h3>Assumptions</h3>
+
+<h1></h1>
+
+<ol>
+<li>100m*100m translates to 100*100 matrix. In Java that would mean, an array of multi dimensional array of 100*100.</li>
+<li>Each location in the matrix can only be occupied by one player at a time.</li>
+<li>A player's movement can be rejected if there is an occupant in the cell. 
+On rejection, the player will have to wait for another second before he can make a move again.</li>
+<li>Player's movement will be random.</li>
+<li>There can be, at most, 4 distinct movements allowed to a player, relative to its position,
+
+<ul>
+<li>  LEFT,</li>
+<li>  TOP,</li>
+<li>  RIGHT,</li>
+<li>  BOTTOM.</li>
+</ul>
+</li>
+<li>If the player is in the corner,
+
+<ul>
+<li>LEFT-TOP, he can only move to RIGHT or BOTTOM,</li>
+<li>RIGHT-TOP, he can only move to LEFT or BOTTOM,</li>
+<li>LEFT-BOTTOM, he can only move to LEFT or TOP,</li>
+<li>RIGHT-BOTTOM, he can only move to LEFT or BOTTOM.</li>
+</ul>
+</li>
+<li>If the player is on the edge of the playarea, but not in the corner,
+
+<ul>
+<li>LEFT, he can only move to TOP, RIGHT or BOTTOM,</li>
+<li>TOP, he can only move to LEFT, RIGHT or BOTTOM,</li>
+<li>RIGHT, he can only move to LEFT, TOP or BOTTOM,</li>
+<li>BOTTOM, he can only move to LEFT, TOP, RIGHT.</li>
+</ul>
+</li>
+</ol><h3>Abstractions</h3>
+
+<h1></h1>
+
+<p>Following abstractions are used in the code.</p>
+
+<ol>
+<li>Playarea: Acts as a coordinator, coordinating players movements.</li>
+<li>Referee: Decides foul play, and also whether to allow a player to return.</li>
+<li>Player: Moves around the play area.</li>
+<li>Cell: A particular point in 100*100 matrix. Is assigned to player occupying it.</li>
+</ol><h3>How to?</h3>
+
+<h1></h1>
+
+<p>This project is based on standard Apache Maven build script. 
+The class com.faziz.playarea.util.Main is one used as the starting point of the project.</p>
+
+<p>To invoke this project you need to,
+1. Make sure you have Apache Maven installed on the machine.
+2. Run this build script from the command prompt </p>
+
+<pre><code>mvn exec:java -Dexec.mainClass="com.faziz.playarea.util.Main"
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Playarea maintained by <a href="https://github.com/faziz">faziz</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-30760766-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
